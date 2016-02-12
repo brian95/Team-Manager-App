@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="game_names">
+        <item>League of Legends</item>
+        <item>Counterstrike Global Offensive</item>
+    </string-array>
+
+    <string-array name="league_ranks">
+        <item>Bronze</item>
+        <item>Silver</item>
+        <item>Gold</item>
+        <item>Platinum</item>
+        <item>Diamond</item>
+        <item>Master</item>
+        <item>Grand Master</item>
+    </string-array>
+
+    <string-array name="csgo_ranks">
+        <item>Silver</item>
+        <item>Gold Nova</item>
+        <item>Master Guardian</item>
+        <item>Legendary Eagle</item>
+        <item>Global Elite</item>
+    </string-array>
+
+</resources>
