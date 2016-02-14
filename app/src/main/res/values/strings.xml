@@ -16,4 +16,5 @@
     <string name="team_description">Team Description</string>
     <string name="team_name">Team Name</string>
     <string name="test">test</string>
+    <string name="logout">logout</string>
 </resources>

@@ -5,16 +5,18 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
-import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.Toast;
 
-import com.example.brianmote.teammanager.Firebase.TeamHandler;
+import com.example.brianmote.teammanager.Handlers.AuthHandler;
+import com.example.brianmote.teammanager.Handlers.TeamHandler;
 import com.example.brianmote.teammanager.Listeners.FBCompletionListener;
-import com.example.brianmote.teammanager.Models.*;
+import com.example.brianmote.teammanager.Pojos.Account;
+import com.example.brianmote.teammanager.Pojos.Team;
+import com.example.brianmote.teammanager.Pojos.User;
 import com.example.brianmote.teammanager.R;
 import com.firebase.client.Firebase;
 import com.firebase.client.FirebaseError;
@@ -26,7 +28,8 @@ public class CreateTeamActivity extends AppCompatActivity {
     private static final String TAG = "Create Team Activity";
     private Team team;
     private User owner;
-    private TeamHandler handler;
+    private TeamHandler teamHandler;
+    private AuthHandler authHandler;
     private ArrayAdapter<CharSequence> gameAdapter;
     private ArrayAdapter<CharSequence> csgoRankAdapter;
     private ArrayAdapter<CharSequence> lolRankAdapter;
@@ -68,8 +71,6 @@ public class CreateTeamActivity extends AppCompatActivity {
         String name = createTeamName.getText().toString();
         String game = createTeamGame.getSelectedItem().toString();
         String rank = createTeamRank.getSelectedItem().toString();
-        String description = createTeamDesc.getText().toString();
-
         if (dialog == null) {
             dialog = new ProgressDialog(CreateTeamActivity.this);
             dialog.setMessage("Loading...");
@@ -83,11 +84,16 @@ public class CreateTeamActivity extends AppCompatActivity {
             team = new Team(name, game, rank);
         }
 
-        if (handler == null) {
-            handler = new TeamHandler(team);
+        if (teamHandler == null) {
+            teamHandler = new TeamHandler();
         }
 
-        handler.create(new FBCompletionListener() {
+        if (authHandler == null) {
+            Account currentAccount = AuthHandler.getCurrentAccount();
+            authHandler = new AuthHandler();
+        }
+
+        teamHandler.create(team, new FBCompletionListener() {
             @Override
             public void onComplete(FirebaseError firebaseError) {
                 if (dialog.isShowing()) {
@@ -96,6 +102,7 @@ public class CreateTeamActivity extends AppCompatActivity {
                 String msg;
                 if (firebaseError == null) {
                     msg = "Team Created";
+                    authHandler.createTeam(team);
                 } else {
                     msg = firebaseError.getMessage();
                 }

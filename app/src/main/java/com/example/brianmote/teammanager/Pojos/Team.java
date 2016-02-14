@@ -1,8 +1,7 @@
-package com.example.brianmote.teammanager.Models;
+package com.example.brianmote.teammanager.Pojos;
 
-import android.support.annotation.Nullable;
-
-import com.example.brianmote.teammanager.Interfaces.FBTeam;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.firebase.client.annotations.NotNull;
 
 import java.util.List;
@@ -14,8 +13,12 @@ public class Team{
     private String name;
     private String game;
     private String rank;
+//    private int numMembers;
 
-    private Team() {
+    @JsonProperty("roster")
+    private List<String> roster;
+
+    public Team() {
         //Required for Firebase
     }
 
@@ -25,19 +28,29 @@ public class Team{
         this.rank = rank;
     }
 
-//    @Override
     public String getName() {
         return name;
     }
 
-//    @Override
     public String getGame() {
         return game;
     }
 
-//    @Override
     public String getRank() {
         return rank;
     }
 
+//    public int getNumMembers() {
+//        return numMembers;
+//    }
+//
+//    @JsonIgnore
+//    public void setNumMembers(int number) {
+//        this.numMembers = number;
+//    }
+
+    @JsonIgnore
+    public List<String> getRoster() {
+        return roster;
+    }
 }

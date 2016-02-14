@@ -11,12 +11,10 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import com.example.brianmote.teammanager.Firebase.FirebaseInit;
-import com.example.brianmote.teammanager.Firebase.UserHandler;
+import com.example.brianmote.teammanager.Handlers.AuthHandler;
 import com.example.brianmote.teammanager.Listeners.FBCompletionListener;
-import com.example.brianmote.teammanager.Models.User;
+import com.example.brianmote.teammanager.Pojos.Account;
 import com.example.brianmote.teammanager.R;
-import com.firebase.client.AuthData;
 import com.firebase.client.Firebase;
 import com.firebase.client.FirebaseError;
 
@@ -25,8 +23,8 @@ import butterknife.ButterKnife;
 
 public class LoginActivity extends AppCompatActivity {
     private static final String TAG = "LoginActivity";
-    private User user;
-    private UserHandler handler;
+    private Account account;
+    private AuthHandler handler;
     private ProgressDialog dialog;
     private Firebase ref;
 
@@ -79,16 +77,16 @@ public class LoginActivity extends AppCompatActivity {
 
         String email = loginEmail.getText().toString();
         String password = loginPassword.getText().toString();
-        if (user == null) {
-            user = new User(email);
+        if (account == null) {
+            account = new Account(email);
         }
-        user.setPassword(password);
+        account.setPassword(password);
 
         if (handler == null) {
-            handler = new UserHandler(user);
+            handler = new AuthHandler();
         }
 
-        handler.login(new FBCompletionListener() {
+        handler.login(account, new FBCompletionListener() {
             @Override
             public void onComplete(FirebaseError firebaseError) {
                 if (dialog.isShowing()) {
@@ -110,17 +108,13 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void checkLoginStatus() {
-        if (ref == null) {
-            ref = new Firebase(FirebaseInit.BASE_REF);
+        if (handler == null) {
+            handler = new AuthHandler();
         }
-        ref.addAuthStateListener(new Firebase.AuthStateListener() {
-            @Override
-            public void onAuthStateChanged(AuthData authData) {
-                if (authData != null) {
-                    startActivity(new Intent(LoginActivity.this, HomeScreenActivity.class));
-                }
-            }
-        });
+
+        if (handler.checkLoginStatus()) {
+            startActivity(new Intent(LoginActivity.this, HomeScreenActivity.class));
+        }
     }
 
 }

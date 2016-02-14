@@ -1,17 +1,13 @@
-package com.example.brianmote.teammanager.Models;
+package com.example.brianmote.teammanager.Pojos;
 
 /**
- * Created by Brian Mote on 2/11/2016.
+ * Created by Brian Mote on 2/14/2016.
  */
-public class User {
+public class Account {
     private String email;
     private String password;
 
-    public User() {
-
-    }
-
-    public User(String email) {
+    public Account(String email) {
         this.email = email;
     }
 

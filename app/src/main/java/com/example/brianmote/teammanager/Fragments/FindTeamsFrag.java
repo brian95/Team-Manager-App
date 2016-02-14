@@ -9,34 +9,38 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
 
-import com.example.brianmote.teammanager.Firebase.TeamHandler;
-import com.example.brianmote.teammanager.Models.Team;
+import com.example.brianmote.teammanager.Adapters.TeamsAdapter;
+import com.example.brianmote.teammanager.Firebase.FirebaseInit;
+import com.example.brianmote.teammanager.Handlers.TeamHandler;
+import com.example.brianmote.teammanager.Listeners.FBItemChangeListener;
+import com.example.brianmote.teammanager.Pojos.Team;
 import com.example.brianmote.teammanager.R;
-import com.firebase.ui.FirebaseRecyclerAdapter;
+import com.firebase.client.DataSnapshot;
+import com.firebase.client.Firebase;
+import com.firebase.client.FirebaseError;
 
 import java.util.ArrayList;
 
-import butterknife.Bind;
-import butterknife.ButterKnife;
-
-public class YourTeamsFragment extends Fragment {
+public class FindTeamsFrag extends Fragment {
+    private static final String TAG = "Find Teams Fragment";
     private static final String PAGE_NUM = "page_num";
+    private Firebase ref = new Firebase(FirebaseInit.BASE_REF);
     private int posArg;
     private OnFragmentInteractionListener mListener;
     private TeamHandler handler;
     private Team team;
-    private FirebaseRecyclerAdapter mAdapter;
+//    private FirebaseRecyclerAdapter mAdapter;
+    private TeamsAdapter mAdapter;
     private ArrayList<Team> teamsList;
     private RecyclerView teamsRView;
 
-    public YourTeamsFragment() {
+    public FindTeamsFrag() {
         // Required empty public constructor
     }
 
-    public static YourTeamsFragment newInstance(int position) {
-        YourTeamsFragment fragment = new YourTeamsFragment();
+    public static FindTeamsFrag newInstance(int position) {
+        FindTeamsFrag fragment = new FindTeamsFrag();
         Bundle args = new Bundle();
         args.putInt(PAGE_NUM, position);
         fragment.setArguments(args);
@@ -75,29 +79,53 @@ public class YourTeamsFragment extends Fragment {
     }
 
     @Override
+    public void onResume() {
+        super.onResume();
+    }
+
+    @Override
     public void onDetach() {
         super.onDetach();
         mListener = null;
     }
 
     public void fetchData() {
+        Firebase teamsRef = ref.child("Teams");
         if (handler == null) {
             handler = new TeamHandler();
         }
 
-        mAdapter = new FirebaseRecyclerAdapter<Team, TeamViewHolder>(Team.class, R.layout
-                .your_team_holders, TeamViewHolder.class, handler.getAllTeams()) {
-            @Override
-            protected void populateViewHolder(TeamViewHolder viewHolder, Team team, int position) {
-                super.populateViewHolder(viewHolder, team, position);
+        if (teamsList == null) {
+            teamsList = new ArrayList<>();
+        }
 
-                viewHolder.teamNameHolder.setText(team.getName());
-                viewHolder.teamRankHolder.setText(team.getRank());
-                viewHolder.teamGameHolder.setText(team.getGame());
+        mAdapter = new TeamsAdapter(teamsList, R.layout.your_team_holders);
+        teamsRView.setAdapter(mAdapter);
+
+        handler.populateList(teamsRef, new FBItemChangeListener() {
+            @Override
+            public void onItemChanged(DataSnapshot dataSnapshot) {
+                Team team = dataSnapshot.getValue(Team.class);
+                if (!teamsList.contains(team)) {
+                    teamsList.add(team);
+                }
+                mAdapter.notifyDataSetChanged();
             }
 
-        };
-        teamsRView.setAdapter(mAdapter);
+            @Override
+            public void onItemDeleted(DataSnapshot dataSnapshot) {
+                Team team = dataSnapshot.getValue(Team.class);
+                if (teamsList.contains(team)) {
+                    teamsList.remove(team);
+                }
+                mAdapter.notifyDataSetChanged();
+            }
+
+            @Override
+            public void onCancel(FirebaseError error) {
+                System.out.println(error.getMessage());
+            }
+        });
     }
 
     /**
@@ -114,39 +142,4 @@ public class YourTeamsFragment extends Fragment {
         // TODO: Update argument type and name
         void onFragmentInteraction(Uri uri);
     }
-
-    public static class TeamViewHolder extends RecyclerView.ViewHolder {
-        TextView teamNameHolder;
-        TextView teamRankHolder;
-        TextView teamGameHolder;
-
-        public TeamViewHolder(View itemView) {
-            super(itemView);
-            teamNameHolder = (TextView) itemView.findViewById(R.id.teamNameHolder);
-            teamRankHolder = (TextView) itemView.findViewById(R.id.teamRankHolder);
-            teamGameHolder = (TextView) itemView.findViewById(R.id.teamGameHolder);
-
-            teamNameHolder.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    System.out.println("clicked " + getAdapterPosition());
-                }
-            });
-
-            teamRankHolder.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    System.out.println("clicked rank");
-                }
-            });
-
-            teamGameHolder.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    System.out.println("clicked game");
-                }
-            });
-        }
-    }
-
 }

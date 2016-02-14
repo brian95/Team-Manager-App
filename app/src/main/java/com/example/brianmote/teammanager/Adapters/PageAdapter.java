@@ -1,12 +1,11 @@
 package com.example.brianmote.teammanager.Adapters;
 
-import android.app.FragmentManager;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentStatePagerAdapter;
 
-import com.example.brianmote.teammanager.Fragments.FindTeamFragment;
+import com.example.brianmote.teammanager.Fragments.FindTeamsFrag;
 import com.example.brianmote.teammanager.Fragments.MessagesFragment;
-import com.example.brianmote.teammanager.Fragments.YourTeamsFragment;
+import com.example.brianmote.teammanager.Fragments.YourTeamsFrag;
 
 /**
  * Created by Brian Mote on 2/11/2016.
@@ -23,11 +22,11 @@ public class PageAdapter extends FragmentStatePagerAdapter {
     public Fragment getItem(int position) {
         switch (position) {
             case 0:
-                YourTeamsFragment yourTeams = YourTeamsFragment.newInstance(position + 1);
+                YourTeamsFrag yourTeams = YourTeamsFrag.newInstance(position + 1);
                 return yourTeams;
 
             case 1:
-                FindTeamFragment findTeam = FindTeamFragment.newInstance(position + 2);
+                FindTeamsFrag findTeam = FindTeamsFrag.newInstance(position + 2);
                 return findTeam;
 
             case 2:

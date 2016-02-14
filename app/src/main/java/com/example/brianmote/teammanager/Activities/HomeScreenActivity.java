@@ -1,35 +1,38 @@
 package com.example.brianmote.teammanager.Activities;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.view.View;
+import android.widget.Toast;
 
 import com.example.brianmote.teammanager.Adapters.PageAdapter;
-import com.example.brianmote.teammanager.Fragments.FindTeamFragment;
+import com.example.brianmote.teammanager.Fragments.FindTeamsFrag;
 import com.example.brianmote.teammanager.Fragments.MessagesFragment;
-import com.example.brianmote.teammanager.Fragments.YourTeamsFragment;
+import com.example.brianmote.teammanager.Fragments.YourTeamsFrag;
+import com.example.brianmote.teammanager.Handlers.AuthHandler;
+import com.example.brianmote.teammanager.Listeners.FBCompletionListener;
 import com.example.brianmote.teammanager.R;
+import com.firebase.client.FirebaseError;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
 
 public class HomeScreenActivity extends AppCompatActivity
-        implements FindTeamFragment.OnFragmentInteractionListener, YourTeamsFragment
+        implements YourTeamsFrag.OnFragmentInteractionListener, FindTeamsFrag
         .OnFragmentInteractionListener, MessagesFragment.OnFragmentInteractionListener {
 
     private static final String TAG = "Homescreen Activity";
     private PageAdapter pageAdapter;
+    private AuthHandler authHandler;
+    private ProgressDialog dialog;
 
     @Bind(R.id.tabLayout)
     TabLayout tabLayout;
@@ -60,6 +63,7 @@ public class HomeScreenActivity extends AppCompatActivity
 
         pager.setAdapter(pageAdapter);
         pager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
+        pager.setOffscreenPageLimit(10);
 
         tabLayout.setOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
@@ -98,6 +102,40 @@ public class HomeScreenActivity extends AppCompatActivity
             case R.id.action_add_team:
                 startActivity(new Intent(HomeScreenActivity.this, CreateTeamActivity.class));
                 return true;
+
+            case R.id.action_logout:
+                if (dialog == null) {
+                    dialog = new ProgressDialog(HomeScreenActivity.this);
+                }
+                dialog.setMessage("Loading...");
+                dialog.setCancelable(false);
+
+                if (!dialog.isShowing()) {
+                    dialog.show();
+                }
+
+                if (authHandler == null) {
+                    authHandler = new AuthHandler();
+                }
+
+                authHandler.logout(new FBCompletionListener() {
+                    @Override
+                    public void onComplete(FirebaseError firebaseError) {
+                        if (dialog.isShowing()) {
+                            dialog.dismiss();
+                        }
+                        String msg;
+                        if (firebaseError == null) {
+                            msg = "Logging out";
+                            startActivity(new Intent(HomeScreenActivity.this, LoginActivity.class));
+                        } else {
+                            msg = firebaseError.getMessage();
+                        }
+                        Toast.makeText(HomeScreenActivity.this, msg, Toast.LENGTH_LONG).show();
+                    }
+                });
+                return true;
+
             default:
                 return super.onOptionsItemSelected(item);
         }
