@@ -6,13 +6,10 @@ import com.example.brianmote.teammanager.Listeners.FBAuthListener;
 import com.example.brianmote.teammanager.Listeners.FBCompletionListener;
 import com.example.brianmote.teammanager.Listeners.FBItemChangeListener;
 import com.example.brianmote.teammanager.Pojos.Account;
-import com.example.brianmote.teammanager.Pojos.Team;
 import com.example.brianmote.teammanager.Pojos.User;
 import com.firebase.client.AuthData;
 import com.firebase.client.Firebase;
 import com.firebase.client.FirebaseError;
-
-import java.util.HashMap;
 
 /**
  * Created by Brian Mote on 2/11/2016.
@@ -114,14 +111,5 @@ public class AuthHandler implements FBAuthHandler{
     public void logout(FBCompletionListener fbCompletionListener) {
         ref.unauth();
         fbCompletionListener.onComplete(null);
-    }
-
-    public void createTeam(Team team) {
-        Firebase currentUserRef = usersRef.child(ref.getAuth().getUid());
-        Firebase userTeamRef = currentUserRef.child("Teams");
-        HashMap<String, Object> userTeamMap = new HashMap<>();
-        userTeamMap.put(team.getName(), true);
-
-        userTeamRef.updateChildren(userTeamMap);
     }
 }

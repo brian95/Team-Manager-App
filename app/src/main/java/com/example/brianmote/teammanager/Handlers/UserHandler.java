@@ -6,6 +6,7 @@ import com.example.brianmote.teammanager.Firebase.FirebaseInit;
 import com.example.brianmote.teammanager.Interfaces.FBHandler;
 import com.example.brianmote.teammanager.Listeners.FBCompletionListener;
 import com.example.brianmote.teammanager.Listeners.FBItemChangeListener;
+import com.example.brianmote.teammanager.Pojos.Team;
 import com.example.brianmote.teammanager.Pojos.User;
 import com.firebase.client.ChildEventListener;
 import com.firebase.client.DataSnapshot;
@@ -99,6 +100,14 @@ public class UserHandler implements FBHandler<User> {
             }
         });
 
+    }
+
+    public void createUserTeam(Team team) {
+        Firebase userTeamsRef = currentUserRef.child("Teams");
+        HashMap<String, Object> map = new HashMap<>();
+        map.put(team.getName(), true);
+
+        userTeamsRef.updateChildren(map);
     }
 
 }

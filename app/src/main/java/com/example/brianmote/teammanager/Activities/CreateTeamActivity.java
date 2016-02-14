@@ -13,6 +13,7 @@ import android.widget.Toast;
 
 import com.example.brianmote.teammanager.Handlers.AuthHandler;
 import com.example.brianmote.teammanager.Handlers.TeamHandler;
+import com.example.brianmote.teammanager.Handlers.UserHandler;
 import com.example.brianmote.teammanager.Listeners.FBCompletionListener;
 import com.example.brianmote.teammanager.Pojos.Account;
 import com.example.brianmote.teammanager.Pojos.Team;
@@ -29,7 +30,7 @@ public class CreateTeamActivity extends AppCompatActivity {
     private Team team;
     private User owner;
     private TeamHandler teamHandler;
-    private AuthHandler authHandler;
+    private UserHandler userHandler;
     private ArrayAdapter<CharSequence> gameAdapter;
     private ArrayAdapter<CharSequence> csgoRankAdapter;
     private ArrayAdapter<CharSequence> lolRankAdapter;
@@ -88,9 +89,9 @@ public class CreateTeamActivity extends AppCompatActivity {
             teamHandler = new TeamHandler();
         }
 
-        if (authHandler == null) {
+        if (userHandler == null) {
             Account currentAccount = AuthHandler.getCurrentAccount();
-            authHandler = new AuthHandler();
+            userHandler = new UserHandler();
         }
 
         teamHandler.create(team, new FBCompletionListener() {
@@ -102,7 +103,7 @@ public class CreateTeamActivity extends AppCompatActivity {
                 String msg;
                 if (firebaseError == null) {
                     msg = "Team Created";
-                    authHandler.createTeam(team);
+                    userHandler.createUserTeam(team);
                 } else {
                     msg = firebaseError.getMessage();
                 }
